@@ -1,0 +1,369 @@
+---
+title: "Dagum基尼系数的推导过程与代码实现"
+author: "冯冬发"
+date: '2021-09-16'
+output:
+  pdf_document: 
+    latex_engine: xelatex
+header-includes:
+  - \usepackage{ctex}
+categories:
+  - 经济学
+tags:
+  - 阅读笔记
+  - R语言
+slug: dagum_index
+---
+
+<script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
+
+
+<p><a href="https://doi.org/10.1007/BF01205777">Dagum(1997)</a>提出了一种基尼系数分解方法，
+能够将基尼系数分解为组内差异贡献、组间差异净值贡献和组间超变密度贡献，
+在后续的研究中得到了广泛的应用。
+这篇短文将简要介绍Dagum基尼系数的推导过程和具体的代码实现。</p>
+<div id="dagum1997的研究背景" class="section level2">
+<h2>Dagum1997的研究背景</h2>
+<p><a href="https://doi.org/10.1007/BF01205777">Dagum(1997)</a>的文章标题是
+<em>A New Approach to the Decomposition of the Gini Income Inequality Ratio</em>，
+意指针对基尼系数的一种新的分解方法。
+在介绍Dagum1997的具体内容之前，我们首先解决两个前置问题：</p>
+<ul>
+<li>什么是基尼系数？</li>
+<li>Dagum1997为什么要提出一种新的分解方法？</li>
+</ul>
+<div id="什么是基尼系数" class="section level3">
+<h3>什么是基尼系数？</h3>
+<p>基尼系数早在本科生用的高鸿业版西方经济学上就出现过了，
+它是一个用来衡量经济体内收入分配不平等程度的指数，
+取值范围介于0和1之间，数值越小代表收入分配越平等，
+反之则代表收入分配差异较大。
+该指标计算简单，具有清晰明确且意义重大的经济学含义，
+在经济学研究中占据着非常重要的位置。</p>
+<p>计算基尼系数是简单的，
+经济学研究者的工作重点更多地放在了为缩减基尼系数建言献策上，
+在研究过程中不得不回答这样一个问题：
+基尼系数由哪些部分构成，
+我们在哪里发力会取得事半功倍的效果？
+这就是一个分解基尼系数的问题。
+只要我们稍微花点时间在互联网上徜徉一段时间，
+就不难发现该领域内早已挤满了大牛。
+我们除了关心Dagum1997的推导过程之外，
+也应对其能够脱颖而出的原因有一些粗浅的理解。</p>
+</div>
+<div id="dagum1997为什么要提出一种新的分解方法" class="section level3">
+<h3>Dagum1997为什么要提出一种新的分解方法？</h3>
+<p><a href="https://www.jstor.org/stable/1914138">Bourguignon(1979)</a>
+认为只有两类收入不平等指数能够分解为若干子指数的加权平均和，
+但基尼系数并不在其中，暗示基尼系数不可分解。
+<a href="https://doi.org/10.6092/issn.1973-2201/800">Frosini(1989)</a>直接开出地图炮，
+认为所有归一化指数都不能分解。
+显然我们知道，基尼系数是一个标准的归一化指数。
+但事实上，<a href="https://doi.org/10.2307/2282918">Bhattacharya和Mahalanobis(1967)</a>
+早就提出了一种基尼系数的分解方法，
+后来人咋还能理直气壮地说基尼系数不可分解呢？
+这是因为BM1967的分解方法有一些瑕疵，
+该方法首先从总体基尼系数中分解出一个组间不平等指数，
+然后将总体基尼系数与该组间不平等指数之差视为组内不平等指数，
+但这个组内不平等指数实际上并不能很好地衡量组内不平等对于总体基尼系数的贡献。</p>
+<p>Dagum1997就像是反转之后的再反转，
+他说你们东厂做不到的事情，我们西厂来做，
+然后就提出了我们即将要介绍的分解方法，属实牛逼。</p>
+</div>
+</div>
+<div id="dagum基尼系数的推导过程" class="section level2">
+<h2>Dagum基尼系数的推导过程</h2>
+<div id="总体基尼系数" class="section level3">
+<h3>总体基尼系数</h3>
+<p>假设我们的研究对象是这样的一个经济体：所有人被划分为<span class="math inline">\(k\)</span>个不同的组别，
+对于第<span class="math inline">\(j\)</span>组来说，其人口量为<span class="math inline">\(n_j\)</span>，第<span class="math inline">\(i\)</span>个个体的收入为<span class="math inline">\(y_{ji}\)</span>。
+所以，第<span class="math inline">\(j\)</span>组的平均收入为<span class="math inline">\(\bar{y}_j=\sum_i y_{ji}/n_j\)</span>，
+经济体总人口为<span class="math inline">\(n=\sum_jn_j\)</span>，总体平均收入水平为<span class="math inline">\(\bar{y}=\sum_j\sum_iy_{ji}/n\)</span>。
+进而可定义第<span class="math inline">\(j\)</span>组的人口占比为<span class="math inline">\(p_j=n_j/n\)</span>，收入占比为<span class="math inline">\(s_j=n_j\bar{y}_j/(n\bar{y})\)</span>。</p>
+<p>由此便能给出该经济体的总体基尼系数取值为：
+<span class="math display">\[
+  G=\frac{1}{2\bar{y}}\sum_{i=1}^n\sum_{r=1}^n|y_i-y_r|/n^2
+  \equiv \Delta/(2\bar{y})
+\]</span>
+我们可以将分组信息代入其中，得到如下总体基尼系数表达式：
+<span class="math display">\[
+  G=\frac{1}{2\bar{y}}\sum_{j=1}^k\sum_{h=1}^k\sum_{i=1}^{n_j}\sum_{r=1}^{n_h}|y_{ji}-y_{hr}|/n^2
+\]</span>
+式中的<span class="math inline">\(y_{ji}\)</span>代表第<span class="math inline">\(j\)</span>组中第<span class="math inline">\(i\)</span>个个体的收入水平，
+<span class="math inline">\(y_{hr}\)</span>代表第<span class="math inline">\(h\)</span>组中第<span class="math inline">\(r\)</span>个个体的收入水平，
+这个表达方式在后面会见得非常频繁，所以这里多嘴提一句。</p>
+<p>如果我们将计算总体基尼系数的算法仅应用于第<span class="math inline">\(j\)</span>组，
+便能得到第<span class="math inline">\(j\)</span>组的组内基尼系数：
+<span class="math display">\[
+  G_{jj}=\frac{1}{2\bar{y}_j}\sum_{i=1}^{n_j}\sum_{r=1}^{n_j}|y_{ji}-y_{jr}|/n^2_j
+  \equiv \Delta_{jj}/(2\bar{y}_j)
+\]</span>
+借鉴上述计算公式，我们还可以给出组间基尼系数的表达式：
+<span class="math display">\[
+  G_{jh}=\frac{1}{\bar{y}_j+\bar{y}_h}\sum_{i=1}^{n_j}\sum_{r=1}^{n_h}|y_{ji}-y_{hr}|/(n_jn_h)
+  \equiv \Delta_{jh}/(\bar{y}_j+\bar{y}_h)
+\]</span>
+不难发现，<span class="math inline">\(G_{jj}\)</span>就是一个特殊的<span class="math inline">\(G_{jh}\)</span>，
+当用以计算组间基尼系数的两个分组是同一个分组时，
+所得结果即为组内基尼系数。</p>
+</div>
+<div id="若干组数量等价关系" class="section level3">
+<h3>若干组数量等价关系</h3>
+<p><span class="math display">\[
+  \begin{split}
+    \Delta &amp;= \sum_{j=1}^k\sum_{h=1}^k\sum_{i=1}^{n_j}\sum_{r=1}^{n_h}|y_{ji}-y_{hr}|/n^2\\
+    &amp;= \sum_{j=1}^k\sum_{h=1}^k\sum_{i=1}^{n_j}\sum_{r=1}^{n_h}|y_{ji}-y_{hr}|/(n_jn_h)*n_jn_h/n^2\\
+    &amp;=\sum_{j=1}^k\sum_{h=1}^k\Delta_{jh}*(n_jn_h)/n^2\\
+    &amp;=\sum_{j=1}^k\sum_{h=1}^k\Delta_{jh}p_jp_h\\
+    &amp;=p&#39;(\Delta_{jh})p
+  \end{split}
+\]</span>
+式中的<span class="math inline">\((\Delta_{jh})\)</span>代表由<span class="math inline">\(\Delta_{jh}\)</span>构成的矩阵，
+<span class="math inline">\(p\)</span>代表由各组人口占总人口的比值构成的向量。
+显然，<span class="math inline">\((\Delta_{jh})\)</span>是一个对称矩阵，因为<span class="math inline">\(\Delta_{jh}=\Delta_{hj}\)</span>。</p>
+<p><span class="math display">\[
+  \begin{split}
+    G&amp;= \Delta/(2\bar{y})\\
+    &amp;=\sum_{j=1}^k\sum_{h=1}^k\Delta_{jh}p_jp_h/(2\bar{y})\\
+    &amp;=\sum_{j=1}^k\sum_{h=1}^k\Delta_{jh}/(\bar{y}_j+\bar{y}_h)*(\bar{y}_j+\bar{y}_h)p_jp_h/(2\bar{y})\\
+    &amp;=\sum_{j=1}^k\sum_{h=1}^kG_{jh}(\bar{y}_j+\bar{y}_h)p_jp_h/(2\bar{y})\\
+    &amp;=\frac{1}{2}\sum_{j=1}^k\sum_{h=1}^kG_{jh}(p_hs_j+p_js_h)\\
+    &amp;=\sum_{j=1}^k\sum_{h=1}^kG_{jh}p_hs_j\\
+    &amp;=p&#39;(G_{jh})s\\
+  \end{split}
+\]</span>
+式中的<span class="math inline">\((G_{jh})\)</span>是由第<span class="math inline">\(j\)</span>组和第<span class="math inline">\(h\)</span>组的组间基尼系数<span class="math inline">\(G_{jh}\)</span>构成的对称矩阵，
+<span class="math inline">\(s\)</span>代表由各组收入份额构成的向量，由于
+<span class="math display">\[
+  \sum_{j=1}^k\sum_{h=1}^kp_hs_j=\sum_{j=1}^ks_j\sum_{h=1}^kp_h=\sum_{j=1}^ks_j=1
+\]</span>
+所以我们便将基尼系数改写为了所有组间基尼系数的加权平均和，
+具体权重为参与计算的两个组的人口占比与收入占比之积。
+由于前文已经指出了组内基尼系数其实就是一种特殊的组间基尼系数，
+所以上述等式实际上便完成了一个基尼系数的分解，
+即将其表示为了组间基尼系数和组内基尼系数的加权平均和。</p>
+<p>Dagum1997并未到此为止，而是对组间基尼系数做了更进一步的分解。
+他定义各个组的平均经济影响力为它的平均收入，
+如果第<span class="math inline">\(j\)</span>组的平均收入超过第<span class="math inline">\(h\)</span>组的平均收入，
+则称第<span class="math inline">\(j\)</span>组相比第<span class="math inline">\(h\)</span>组更具有经济影响力。
+不失一般性地，在下文的论述过程中，
+我们便假设第<span class="math inline">\(j\)</span>组相比第<span class="math inline">\(h\)</span>组更具有经济影响力。
+用第<span class="math inline">\(j\)</span>组当中的所有收入水平<span class="math inline">\(y_{ji}\)</span>减去第<span class="math inline">\(h\)</span>组当中的所有收入水平<span class="math inline">\(y_{hr}\)</span>，
+所得差值可能有正有负（如果两个组的收入水平存在重叠，则有负值差值，反之则无）。</p>
+<p>Dagum1997将第<span class="math inline">\(j\)</span>组和第<span class="math inline">\(h\)</span>组的总经济影响力<span class="math inline">\(d_{jh}\)</span>定义为上述所有正向差值的加权平均和，
+给出其具体的数学表达式为：
+<span class="math display">\[
+  d_{jh}=\int_0^\infty dF_j(y)\int_0^y(y-x)dF_h(x)
+\]</span>
+式中的<span class="math inline">\(F_j(\cdot)\)</span>和<span class="math inline">\(F_h(\cdot)\)</span>分别代表第<span class="math inline">\(j\)</span>组和第<span class="math inline">\(h\)</span>组的累积分布函数，
+上述二重积分当中的<span class="math inline">\(y\)</span>，即第<span class="math inline">\(j\)</span>组的收入水平的取值范围是<span class="math inline">\((0,\infty)\)</span>，
+第<span class="math inline">\(h\)</span>组的收入水平<span class="math inline">\(x\)</span>的取值范围是<span class="math inline">\((0,y)\)</span>，被积函数是<span class="math inline">\(y-x\)</span>。
+毫无疑问，这个数学表达式和Dagum1997给出的定义是保持一致的。
+Dagum1997进一步给出了该数学表达式的解析形式：</p>
+<p><span class="math display">\[
+  \begin{split}
+    d_{jh}&amp;=\int_0^\infty dF_j(y)\int_0^y(y-x)dF_h(x)\\
+          &amp;=\int_0^\infty\int_0^y(y-x)dF_h(x)dF_j(y)\\
+          &amp;=\int_0^\infty\int_0^yydF_h(x)dF_j(y)-\int_0^\infty\int_0^yxdF_h(x)dF_j(y)\\
+          &amp;=\int_0^\infty y\int_0^ydF_h(x)dF_j(y)-\int_0^\infty\int_x^\infty xdF_j(y)dF_h(x)\\
+          &amp;=\int_0^\infty yF_h(y)dF_j(y)-\int_0^\infty x \int_x^\infty dF_j(y)dF_h(x)\\
+          &amp;=E_j(yF_h(y))-\int_0^\infty x(1-F_j(x))dF_h(x)\\
+          &amp;=E_j(yF_h(y))-\int_0^\infty xdF_h(x)+ \int_0^\infty xF_j(x)dF_h(x)\\
+          &amp;=E_j(yF_h(y))-E_h(x)+E_h(xF_j(x))\\
+          &amp;=E_j(yF_h(y))+E_h(yF_j(y))-E_h(y)\\
+  \end{split}
+\]</span>
+式中的<span class="math inline">\(E_j(\cdot)\)</span>代表数学期望，第四个等式是交换积分次序的结果，
+最后一个等式之所以成立，是因为<span class="math inline">\(x\)</span>和<span class="math inline">\(y\)</span>只是代表样本点的助记符而已，
+<span class="math inline">\(E_h(x)\)</span>代表的是第<span class="math inline">\(h\)</span>组收入水平的数学期望，同样可以写作<span class="math inline">\(E_h(y)\)</span>。</p>
+<p>上面的总经济影响力是所有正向差值的加权平均，
+相对应地，我们还可以计算出一个所有负向差值绝对值的加权平均，
+Dagum1997将其定义为超变一阶矩(the first-order moment of transvariation)。
+前文已经指出，只有两个组存在重叠部分时，才会有负向差值，
+如果两个组不存在重叠部分，那便没有负向差值，
+我们不经计算便能得知所谓的超变一阶矩等于0。
+参照上式的计算过程，我们不难得出超变一阶矩的解析形式为：
+<span class="math display">\[
+  \begin{split}
+    p_{jh}&amp;=\int_0^\infty dF_h(y)\int_0^y(y-x)dF_j(x)\\
+          &amp;=\int_0^\infty\int_0^y(y-x)dF_j(x)dF_h(y)\\
+          &amp;=\int_0^\infty\int_0^yydF_j(x)dF_h(y)-\int_0^\infty\int_0^yxdF_j(x)dF_h(y)\\
+          &amp;=\int_0^\infty y\int_0^ydF_j(x)dF_h(y)-\int_0^\infty\int_x^\infty xdF_h(y)dF_j(x)\\
+          &amp;=\int_0^\infty yF_j(y)dF_h(y)-\int_0^\infty x \int_x^\infty dF_h(y)dF_j(x)\\
+          &amp;=E_h(yF_j(y))-\int_0^\infty x(1-F_h(x))dF_j(x)\\
+          &amp;=E_h(yF_j(y))-\int_0^\infty xdF_j(x)+ \int_0^\infty xF_h(x)dF_j(x)\\
+          &amp;=E_h(yF_j(y))-E_j(x)+E_j(xF_h(x))\\
+          &amp;=E_j(yF_h(y))+E_h(yF_j(y))-E_j(y)\\
+  \end{split}
+\]</span></p>
+<p><span class="math inline">\(d_{jh}\)</span>是所有正向差值的加权平均值，<span class="math inline">\(p_{jh}\)</span>是所有负向差值绝对值的加权平均值，
+<span class="math inline">\(d_{jh}+p_{jh}\)</span>那就是所有差值的绝对值的加权平均值了，
+那么它和前面提到的<span class="math inline">\(\Delta_{jh}\)</span>有啥关系呢，
+因为后者也是一个差值的绝对值的加权平均。
+不难证明下式成立：
+<span class="math display">\[
+  \begin{split}
+  \Delta_{jh}&amp;=\sum_{i=1}^{n_j}\sum_{r=1}^{n_h}|y_{ji}-y_{hr}|/(n_jn_h)\\
+             &amp;=\int_0^\infty dF_j(y)\int_0^\infty|y-x|dF_h(x)\\
+             &amp;=\int_0^\infty dF_j(y)\int_0^y (y-x) dF_h(x) +\int_0^\infty dF_j(y)\int_y^\infty (x-y) dF_h(x)  \\
+             &amp;=d_{jh}+\int_0^\infty dF_h(x)\int_0^x (x-y) dF_j(y)  \\
+             &amp;=d_{jh}+\int_0^\infty dF_h(y)\int_0^y (y-x) dF_j(x)  \\
+             &amp;=d_{jh} + p_{jh}
+  \end{split}
+\]</span>
+上式当中的第二个等式是将离散型随机变量的期望式改写为了积分形式，
+其中的<span class="math inline">\(1/(n_jn_h)\)</span>是个体的样本频率，在这里被当成概率密度函数了。</p>
+<p>从前文的论述过程当中，我们可以得出如下推论：</p>
+<p>①如果第<span class="math inline">\(j\)</span>组和第<span class="math inline">\(k\)</span>组收入的数学期望相同，即<span class="math inline">\(E_j(y)=E_h(y)\)</span>，则有<span class="math inline">\(d_{jh}=p_{jh}=\Delta_{jh}/2\)</span>，反之亦然。</p>
+<p>①如果第<span class="math inline">\(j\)</span>组的期望收入大于第<span class="math inline">\(k\)</span>组的期望收入，即<span class="math inline">\(E_j(y)&gt;E_h(y)\)</span>，则有<span class="math inline">\(d_{jh}&gt;p_{jh}\)</span>。</p>
+<p>③如果第<span class="math inline">\(j\)</span>组和第<span class="math inline">\(k\)</span>组的收入结构不存在重叠，则<span class="math inline">\(p_{jh=0}\)</span>，会有<span class="math inline">\(d_{jh}=\Delta_{jh}\)</span>。</p>
+<p>综上所述，当<span class="math inline">\(E_j(y)&gt;E_h(y)\)</span>时，我们能够得出如下链式不等关系：
+<span class="math display">\[
+  0&lt;d_{jh}-p_{jh}\le \Delta_{jh}-p_{jh}\le \Delta_{jh}=d_{jh}+p_{jh}
+\]</span>
+Dagum1997将<span class="math inline">\(d_{jh}-p_{jh}\)</span>定义为第<span class="math inline">\(j\)</span>组较之第<span class="math inline">\(h\)</span>组的净经济影响力，
+并基于此定义了一个相对经济影响力<span class="math inline">\(D_{jh}=(d_{jh}-p_{jh})/\Delta_{jh}\)</span>，
+显然该相对经济影响力的取值范围是在<span class="math inline">\(0\)</span>和<span class="math inline">\(1\)</span>之间的，
+当两个小组的期望收入相等时，取值最小为<span class="math inline">\(0\)</span>，
+当两个小组的收入结构不存在重叠之处时，取值最大为<span class="math inline">\(1\)</span>。</p>
+</div>
+<div id="dagum1997对基尼系数的分解" class="section level3">
+<h3>Dagum1997对基尼系数的分解</h3>
+<p>在上述论述的基础之上，我们可以将基尼系数分解为三个部分：
+<span class="math display">\[
+  \begin{split}
+    G&amp;=\frac{1}{2}\sum_{j=1}^k\sum_{h=1}^kG_{jh}(p_hs_j+p_js_h)\\
+     &amp;=\sum_{j=1}^kG_{jj}p_js_j+\frac{1}{2}\times2\times\sum_{j=2}^k\sum_{h=1}^{j-1}G_{jh}(p_hs_j+p_js_h)\\
+     &amp;=\sum_{j=1}^kG_{jj}p_js_j+\sum_{j=2}^k\sum_{h=1}^{j-1}G_{jh}(p_hs_j+p_js_h)(D_{jh}+1-D_{jh})\\
+     &amp;=\sum_{j=1}^kG_{jj}p_js_j+\sum_{j=2}^k\sum_{h=1}^{j-1}G_{jh}(p_hs_j+p_js_h)D_{jh}+\sum_{j=2}^k\sum_{h=1}^{j-1}G_{jh}(p_hs_j+p_js_h)(1-D_{jh})\\
+     &amp;\equiv G_w+G_{nb}+G_t
+  \end{split}
+\]</span>
+其中的<span class="math inline">\(G_w\)</span>代表组内差距对基尼系数的贡献，
+<span class="math inline">\(G_{nb}\)</span>代表组间差异净值对基尼系数的贡献，
+<span class="math inline">\(G_t\)</span>代表组间超变密度对于基尼系数的贡献。</p>
+</div>
+</div>
+<div id="dagum基尼系数的代码实现" class="section level2">
+<h2>Dagum基尼系数的代码实现</h2>
+<p>首先简单设置一下R语言的工作环境：</p>
+<pre class="r"><code>  library(tidyverse)  # 使脚本可以使用管道符号%&gt;%
+  set.seed(0)  # 设定种子以复现实验结果</code></pre>
+<p>我们需要生成一批模拟数据来表示经济体的收入结构。
+假设经济体内拥有8个分组，每组拥有30到40个不等的人口，
+具体的收入水平由厚尾的卡方分布决定。</p>
+<pre class="r"><code>gen_income_data &lt;- function(){
+  index_col  &lt;- numeric()
+  income_col &lt;- numeric()
+  
+  for (index in 1:8) {  # 设定八个分组
+    people_count &lt;- sample(30:40, 1)  # 每组拥有30到40个不等的人口 
+    index_col &lt;- c(index_col, rep(index, people_count))  # 填入组号
+    income_col &lt;- c(income_col, rchisq(people_count, 1))  # 随机生成收入水平
+  }
+  
+  data.frame(group=index_col, income=income_col)  # 返回模拟数据集
+}</code></pre>
+<p>计算基尼系数仅需两列数据，
+一列放置了样本的分组信息，
+另一列放置了样本内个体的收入水平数据。
+在现实应用当中，我们所收集的数据往往包含了许多列，
+所以我们在这里使用<code>formula</code>从数据框当中抽取数据并直接输出计算结果。</p>
+<pre class="r"><code>dagum_gini &lt;- function(model, df){
+  # 该函数计算组间基尼系数，第二个参数留空可用以计算组内基尼系数
+  gini &lt;- function(income_j, income_h = NULL) {
+    if (is_null(income_h)){
+      income_h &lt;- income_j
+    }
+    
+    (rep(income_j, length(income_h)) - rep(income_h, each=length(income_j))) %&gt;%
+      abs %&gt;%
+      mean %&gt;%
+      ( function(x) { x / (mean(income_j) + mean(income_h)) } )
+  }
+  
+  # 该函数计算两组之间的总经济影响力d_jh
+  gross_economic_affluence &lt;- function(income_j, income_h){
+    # 确保j组的平均收入不小于h组的平均收入
+    if (mean(income_j) &lt; mean(income_h)){
+      bak &lt;- income_j
+      income_j &lt;- income_h
+      income_h &lt;- bak
+    }
+    
+    # 令j组元素与h组元素两两互减
+    d &lt;- rep(income_j, each=length(income_h)) - rep(income_h, length(income_j))
+    d &lt;- d[d &gt; 0] # 仅保留大于0的差值
+    sum(d) / length(income_j) / length(income_h)  # 返回计算结果
+  }
+  
+  # 该函数计算两组之间的超变一阶矩
+  transvariation &lt;- function(income_j, income_h){
+    # 确保j组的平均收入不小于h组的平均收入
+    if (mean(income_j) &lt; mean(income_h)){
+      bak &lt;- income_j
+      income_j &lt;- income_h
+      income_h &lt;- bak
+    }
+    
+    # 令j组元素与h组元素两两互减
+    d &lt;- rep(income_j, each=length(income_h)) - rep(income_h, length(income_j))
+    d &lt;- abs(d[d &lt; 0]) # 仅保留小于0的差值，不过要取绝对值转换为正数
+    sum(d) / length(income_j) / length(income_h)  # 返回计算结果
+  }
+  
+  # 该函数计算相对经济影响力
+  relative_economic_affluence &lt;- function(income_j, income_h){
+    d_jh &lt;- gross_economic_affluence(income_j, income_h)
+    p_jh &lt;- transvariation(income_j, income_h)
+    
+    (d_jh - p_jh) / (d_jh + p_jh)
+  }
+  
+  # 为计算基尼系数准备数据
+  income &lt;- model.response(model.frame(model, df))  # 抽取收入数据
+  group &lt;- model.matrix(model, df) %&gt;%  # 抽取分组数据
+    as.vector %&gt;%
+    unique
+    
+  # 计算总体基尼系数
+  total_gini_index &lt;- gini(income)
+  
+  # 分解总体基尼系数
+  within_gini &lt;- 0
+  net_between_gini &lt;- 0
+  trans_gini &lt;- 0
+  
+  for (j in group) {
+    for (h in group){
+      income_j &lt;- income[group == j]
+      income_h &lt;- income[group == h]
+      G_jh &lt;- gini(income_j, income_h)
+      p_j &lt;- length(income_j) / length(income)
+      s_h &lt;- sum(income_h) / sum(income)
+      item &lt;- G_jh * p_j * s_h
+      
+      if (j == h){
+        within_gini &lt;- within_gini + item
+      } else {
+        d_jh = relative_economic_affluence(income_j, income_h)
+        net_between_gini &lt;- net_between_gini + item * d_jh
+        trans_gini &lt;- trans_gini + item * (1 - d_jh)
+      }
+    }
+  }
+  
+  c(G=total_gini_index, Gw=within_gini, Gnb=net_between_gini, Gt=trans_gini)
+}</code></pre>
+<p>利用上述两个函数，我们可以很方便地输出模拟数据的基尼系数及其分解结果：</p>
+<pre class="r"><code>df &lt;- gen_income_data()
+model &lt;- income ~ group - 1
+result &lt;- dagum_gini(model, df)
+print(result)</code></pre>
+<pre><code>##          G         Gw        Gnb         Gt 
+## 0.63591266 0.07780312 0.10690027 0.45120926</code></pre>
+<p>如果想要将代码应用于自己的数据集，
+只要将上述代码当中的<code>df</code>修改为自己的数据框，
+并将<code>model</code>当中的内容替换为对应的变量即可，
+其中<code>~</code>之前的变量代表收入，<code>~</code>之后的变量代表分组标识。</p>
+</div>
