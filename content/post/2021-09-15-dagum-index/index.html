@@ -247,7 +247,8 @@ Dagum1997将<span class="math inline">\(d_{jh}-p_{jh}\)</span>定义为第<span 
 <div id="dagum基尼系数的代码实现" class="section level2">
 <h2>Dagum基尼系数的代码实现</h2>
 <p>首先简单设置一下R语言的工作环境：</p>
-<pre class="r"><code>  library(tidyverse)  # 使脚本可以使用管道符号%&gt;%
+<pre class="r"><code>  library(magrittr)  # 使脚本可以使用管道符号%&gt;%
+  library(knitr)  # 优化结果输出形式
   set.seed(0)  # 设定种子以复现实验结果</code></pre>
 <p>我们需要生成一批模拟数据来表示经济体的收入结构。
 假设经济体内拥有8个分组，每组拥有30到40个不等的人口，
@@ -272,7 +273,7 @@ Dagum1997将<span class="math inline">\(d_{jh}-p_{jh}\)</span>定义为第<span 
 <pre class="r"><code>dagum_gini &lt;- function(model, df){
   # 该函数计算组间基尼系数，第二个参数留空可用以计算组内基尼系数
   gini &lt;- function(income_j, income_h = NULL) {
-    if (is_null(income_h)){
+    if (is.null(income_h)){
       income_h &lt;- income_j
     }
     
@@ -330,9 +331,12 @@ Dagum1997将<span class="math inline">\(d_{jh}-p_{jh}\)</span>定义为第<span 
   total_gini_index &lt;- gini(income)
   
   # 分解总体基尼系数
-  within_gini &lt;- 0
-  net_between_gini &lt;- 0
-  trans_gini &lt;- 0
+  within &lt;- 0
+  net_between &lt;- 0
+  trans &lt;- 0
+  gini_matrix &lt;- matrix(0, length(group), length(group),
+                        dimnames = list(group, group))
+  rea_matrix &lt;- gini_matrix
   
   for (j in group) {
     for (h in group){
@@ -343,25 +347,280 @@ Dagum1997将<span class="math inline">\(d_{jh}-p_{jh}\)</span>定义为第<span 
       s_h &lt;- sum(income_h) / sum(income)
       item &lt;- G_jh * p_j * s_h
       
+      gini_matrix[group == j, group == h] &lt;- G_jh
+      
       if (j == h){
-        within_gini &lt;- within_gini + item
+        within &lt;- within + item
       } else {
         d_jh = relative_economic_affluence(income_j, income_h)
-        net_between_gini &lt;- net_between_gini + item * d_jh
-        trans_gini &lt;- trans_gini + item * (1 - d_jh)
+        net_between &lt;- net_between + item * d_jh
+        trans &lt;- trans + item * (1 - d_jh)
+        rea_matrix[group == j, group == h] &lt;- d_jh
       }
     }
   }
   
-  c(G=total_gini_index, Gw=within_gini, Gnb=net_between_gini, Gt=trans_gini)
+  list(
+    index = data.frame(
+      &#39;指标&#39; = c(&#39;绝对数值&#39;, &#39;相对份额(%)&#39;),
+      &#39;总体基尼系数&#39; = c(total_gini_index, 100),
+      &#39;组内差异贡献&#39; = c(within, 100 * within / total_gini_index),
+      &#39;组间差异净贡献&#39; = c(net_between, 100 * net_between / total_gini_index),
+      &#39;组间超变密度贡献&#39; = c(trans, 100 * trans / total_gini_index)),
+    gini = data.frame(gini_matrix),
+    rea = data.frame(rea_matrix)
+  )
 }</code></pre>
 <p>利用上述两个函数，我们可以很方便地输出模拟数据的基尼系数及其分解结果：</p>
 <pre class="r"><code>df &lt;- gen_income_data()
 model &lt;- income ~ group - 1
 result &lt;- dagum_gini(model, df)
-print(result)</code></pre>
-<pre><code>##          G         Gw        Gnb         Gt 
-## 0.63591266 0.07780312 0.10690027 0.45120926</code></pre>
+kable(result$index, align = &#39;c&#39;, caption = &#39;总体基尼系数及其分解结果&#39;,
+      digits = 4, label = &#39;1&#39;)</code></pre>
+<table>
+<caption><span id="tab:1">Table 1: </span>总体基尼系数及其分解结果</caption>
+<thead>
+<tr class="header">
+<th align="center">指标</th>
+<th align="center">总体基尼系数</th>
+<th align="center">组内差异贡献</th>
+<th align="center">组间差异净贡献</th>
+<th align="center">组间超变密度贡献</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">绝对数值</td>
+<td align="center">0.6359</td>
+<td align="center">0.0778</td>
+<td align="center">0.1069</td>
+<td align="center">0.4512</td>
+</tr>
+<tr class="even">
+<td align="center">相对份额(%)</td>
+<td align="center">100.0000</td>
+<td align="center">12.2349</td>
+<td align="center">16.8105</td>
+<td align="center">70.9546</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>kable(result$gini, align = &#39;c&#39;, caption = &#39;组内及组间基尼系数&#39;,
+      digits = 4, label = &#39;2&#39;, row.names = TRUE)</code></pre>
+<table>
+<caption><span id="tab:2">Table 2: </span>组内及组间基尼系数</caption>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="center">X1</th>
+<th align="center">X2</th>
+<th align="center">X3</th>
+<th align="center">X4</th>
+<th align="center">X5</th>
+<th align="center">X6</th>
+<th align="center">X7</th>
+<th align="center">X8</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">1</td>
+<td align="center">0.6315</td>
+<td align="center">0.6732</td>
+<td align="center">0.6425</td>
+<td align="center">0.6532</td>
+<td align="center">0.6320</td>
+<td align="center">0.5997</td>
+<td align="center">0.6276</td>
+<td align="center">0.6501</td>
+</tr>
+<tr class="even">
+<td align="left">2</td>
+<td align="center">0.6732</td>
+<td align="center">0.6822</td>
+<td align="center">0.6858</td>
+<td align="center">0.6904</td>
+<td align="center">0.6548</td>
+<td align="center">0.6317</td>
+<td align="center">0.6465</td>
+<td align="center">0.6872</td>
+</tr>
+<tr class="odd">
+<td align="left">3</td>
+<td align="center">0.6425</td>
+<td align="center">0.6858</td>
+<td align="center">0.6434</td>
+<td align="center">0.6591</td>
+<td align="center">0.6426</td>
+<td align="center">0.6053</td>
+<td align="center">0.6383</td>
+<td align="center">0.6549</td>
+</tr>
+<tr class="even">
+<td align="left">4</td>
+<td align="center">0.6532</td>
+<td align="center">0.6904</td>
+<td align="center">0.6591</td>
+<td align="center">0.6677</td>
+<td align="center">0.6497</td>
+<td align="center">0.6171</td>
+<td align="center">0.6478</td>
+<td align="center">0.6677</td>
+</tr>
+<tr class="odd">
+<td align="left">5</td>
+<td align="center">0.6320</td>
+<td align="center">0.6548</td>
+<td align="center">0.6426</td>
+<td align="center">0.6497</td>
+<td align="center">0.6101</td>
+<td align="center">0.5784</td>
+<td align="center">0.6052</td>
+<td align="center">0.6445</td>
+</tr>
+<tr class="even">
+<td align="left">6</td>
+<td align="center">0.5997</td>
+<td align="center">0.6317</td>
+<td align="center">0.6053</td>
+<td align="center">0.6171</td>
+<td align="center">0.5784</td>
+<td align="center">0.5341</td>
+<td align="center">0.5715</td>
+<td align="center">0.6085</td>
+</tr>
+<tr class="odd">
+<td align="left">7</td>
+<td align="center">0.6276</td>
+<td align="center">0.6465</td>
+<td align="center">0.6383</td>
+<td align="center">0.6478</td>
+<td align="center">0.6052</td>
+<td align="center">0.5715</td>
+<td align="center">0.5893</td>
+<td align="center">0.6376</td>
+</tr>
+<tr class="even">
+<td align="left">8</td>
+<td align="center">0.6501</td>
+<td align="center">0.6872</td>
+<td align="center">0.6549</td>
+<td align="center">0.6677</td>
+<td align="center">0.6445</td>
+<td align="center">0.6085</td>
+<td align="center">0.6376</td>
+<td align="center">0.6559</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>kable(result$rea, align = &#39;c&#39;, caption = &#39;相对经济影响力(d_jh)&#39;,
+      digits = 4, label = &#39;3&#39;, row.names = TRUE)</code></pre>
+<table>
+<caption><span id="tab:3">Table 3: </span>相对经济影响力(d_jh)</caption>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="center">X1</th>
+<th align="center">X2</th>
+<th align="center">X3</th>
+<th align="center">X4</th>
+<th align="center">X5</th>
+<th align="center">X6</th>
+<th align="center">X7</th>
+<th align="center">X8</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">1</td>
+<td align="center">0.0000</td>
+<td align="center">0.2322</td>
+<td align="center">0.0919</td>
+<td align="center">0.0338</td>
+<td align="center">0.2665</td>
+<td align="center">0.2405</td>
+<td align="center">0.3310</td>
+<td align="center">0.0102</td>
+</tr>
+<tr class="even">
+<td align="left">2</td>
+<td align="center">0.2322</td>
+<td align="center">0.0000</td>
+<td align="center">0.3112</td>
+<td align="center">0.2576</td>
+<td align="center">0.0189</td>
+<td align="center">0.0196</td>
+<td align="center">0.0821</td>
+<td align="center">0.2181</td>
+</tr>
+<tr class="odd">
+<td align="left">3</td>
+<td align="center">0.0919</td>
+<td align="center">0.3112</td>
+<td align="center">0.0000</td>
+<td align="center">0.0562</td>
+<td align="center">0.3505</td>
+<td align="center">0.3331</td>
+<td align="center">0.4129</td>
+<td align="center">0.1003</td>
+</tr>
+<tr class="even">
+<td align="left">4</td>
+<td align="center">0.0338</td>
+<td align="center">0.2576</td>
+<td align="center">0.0562</td>
+<td align="center">0.0000</td>
+<td align="center">0.2921</td>
+<td align="center">0.2687</td>
+<td align="center">0.3531</td>
+<td align="center">0.0430</td>
+</tr>
+<tr class="odd">
+<td align="left">5</td>
+<td align="center">0.2665</td>
+<td align="center">0.0189</td>
+<td align="center">0.3505</td>
+<td align="center">0.2921</td>
+<td align="center">0.0000</td>
+<td align="center">0.0428</td>
+<td align="center">0.0673</td>
+<td align="center">0.2513</td>
+</tr>
+<tr class="even">
+<td align="left">6</td>
+<td align="center">0.2405</td>
+<td align="center">0.0196</td>
+<td align="center">0.3331</td>
+<td align="center">0.2687</td>
+<td align="center">0.0428</td>
+<td align="center">0.0000</td>
+<td align="center">0.1145</td>
+<td align="center">0.2264</td>
+</tr>
+<tr class="odd">
+<td align="left">7</td>
+<td align="center">0.3310</td>
+<td align="center">0.0821</td>
+<td align="center">0.4129</td>
+<td align="center">0.3531</td>
+<td align="center">0.0673</td>
+<td align="center">0.1145</td>
+<td align="center">0.0000</td>
+<td align="center">0.3158</td>
+</tr>
+<tr class="even">
+<td align="left">8</td>
+<td align="center">0.0102</td>
+<td align="center">0.2181</td>
+<td align="center">0.1003</td>
+<td align="center">0.0430</td>
+<td align="center">0.2513</td>
+<td align="center">0.2264</td>
+<td align="center">0.3158</td>
+<td align="center">0.0000</td>
+</tr>
+</tbody>
+</table>
 <p>如果想要将代码应用于自己的数据集，
 只要将上述代码当中的<code>df</code>修改为自己的数据框，
 并将<code>model</code>当中的内容替换为对应的变量即可，

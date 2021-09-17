@@ -259,14 +259,15 @@ $G_t$代表组间超变密度对于基尼系数的贡献。
 ## Dagum基尼系数的代码实现
 首先简单设置一下R语言的工作环境：
 ```{r setup, message=FALSE}
-  library(tidyverse)  # 使脚本可以使用管道符号%>%
+  library(magrittr)  # 使脚本可以使用管道符号%>%
+  library(knitr)  # 优化结果输出形式
   set.seed(0)  # 设定种子以复现实验结果
 ```
 
 我们需要生成一批模拟数据来表示经济体的收入结构。
 假设经济体内拥有8个分组，每组拥有30到40个不等的人口，
 具体的收入水平由厚尾的卡方分布决定。
-```{r}
+```{r gen_income_data}
 gen_income_data <- function(){
   index_col  <- numeric()
   income_col <- numeric()
@@ -285,11 +286,11 @@ gen_income_data <- function(){
 另一列放置了样本内个体的收入水平数据。
 在现实应用当中，我们所收集的数据往往包含了许多列，
 所以我们在这里使用`formula`从数据框当中抽取数据并直接输出计算结果。
-```{r}
+```{r dagum_gini}
 dagum_gini <- function(model, df){
   # 该函数计算组间基尼系数，第二个参数留空可用以计算组内基尼系数
   gini <- function(income_j, income_h = NULL) {
-    if (is_null(income_h)){
+    if (is.null(income_h)){
       income_h <- income_j
     }
     
@@ -347,9 +348,12 @@ dagum_gini <- function(model, df){
   total_gini_index <- gini(income)
   
   # 分解总体基尼系数
-  within_gini <- 0
-  net_between_gini <- 0
-  trans_gini <- 0
+  within <- 0
+  net_between <- 0
+  trans <- 0
+  gini_matrix <- matrix(0, length(group), length(group),
+                        dimnames = list(group, group))
+  rea_matrix <- gini_matrix
   
   for (j in group) {
     for (h in group){
@@ -360,26 +364,43 @@ dagum_gini <- function(model, df){
       s_h <- sum(income_h) / sum(income)
       item <- G_jh * p_j * s_h
       
+      gini_matrix[group == j, group == h] <- G_jh
+      
       if (j == h){
-        within_gini <- within_gini + item
+        within <- within + item
       } else {
         d_jh = relative_economic_affluence(income_j, income_h)
-        net_between_gini <- net_between_gini + item * d_jh
-        trans_gini <- trans_gini + item * (1 - d_jh)
+        net_between <- net_between + item * d_jh
+        trans <- trans + item * (1 - d_jh)
+        rea_matrix[group == j, group == h] <- d_jh
       }
     }
   }
   
-  c(G=total_gini_index, Gw=within_gini, Gnb=net_between_gini, Gt=trans_gini)
+  list(
+    index = data.frame(
+      '指标' = c('绝对数值', '相对份额(%)'),
+      '总体基尼系数' = c(total_gini_index, 100),
+      '组内差异贡献' = c(within, 100 * within / total_gini_index),
+      '组间差异净贡献' = c(net_between, 100 * net_between / total_gini_index),
+      '组间超变密度贡献' = c(trans, 100 * trans / total_gini_index)),
+    gini = data.frame(gini_matrix),
+    rea = data.frame(rea_matrix)
+  )
 }
 ```
 
 利用上述两个函数，我们可以很方便地输出模拟数据的基尼系数及其分解结果：
-```{r}
+```{r use_function}
 df <- gen_income_data()
 model <- income ~ group - 1
 result <- dagum_gini(model, df)
-print(result)
+kable(result$index, align = 'c', caption = '总体基尼系数及其分解结果',
+      digits = 4, label = '1')
+kable(result$gini, align = 'c', caption = '组内及组间基尼系数',
+      digits = 4, label = '2', row.names = TRUE)
+kable(result$rea, align = 'c', caption = '相对经济影响力(d_jh)',
+      digits = 4, label = '3', row.names = TRUE)
 ```
 
 如果想要将代码应用于自己的数据集，
