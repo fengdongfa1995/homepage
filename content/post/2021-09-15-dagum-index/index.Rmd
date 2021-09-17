@@ -340,8 +340,12 @@ dagum_gini <- function(model, df){
   
   # 为计算基尼系数准备数据
   income <- model.response(model.frame(model, df))  # 抽取收入数据
-  group <- model.matrix(model, df) %>%  # 抽取分组数据
-    as.vector %>%
+  group <- model %>%
+    format %>%
+    strsplit('~') %>%
+    ( function(x) x[[1]][2] ) %>%
+    trimws %>%
+    ( function(x) df[[x]] ) %>%
     unique
     
   # 计算总体基尼系数
@@ -393,7 +397,7 @@ dagum_gini <- function(model, df){
 利用上述两个函数，我们可以很方便地输出模拟数据的基尼系数及其分解结果：
 ```{r use_function}
 df <- gen_income_data()
-model <- income ~ group - 1
+model <- income ~ group
 result <- dagum_gini(model, df)
 kable(result$index, align = 'c', caption = '总体基尼系数及其分解结果',
       digits = 4, label = '1')
