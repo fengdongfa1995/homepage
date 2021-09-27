@@ -1,0 +1,109 @@
+---
+title: 有理数集合有“洞”
+author: 冯冬发
+date: '2021-09-27'
+slug: quotient_set_with_holes
+categories:
+  - 数学分析
+tags:
+  - 阅读笔记
+output:
+  pdf_document:
+    latex_engine: xelatex
+header-includes:
+  - \usepackage{ctex}
+---
+
+<script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
+
+
+<div id="命题" class="section level2">
+<h2>命题</h2>
+<p>摘自《普林斯顿数学分析读本》的定理4.1。</p>
+<blockquote>
+<p>存在没有最小数的有理数的子集，也存在没有最大数的有理数的子集。</p>
+</blockquote>
+</div>
+<div id="证明" class="section level2">
+<h2>证明</h2>
+<p>我们只要举出一个例子，使其满足该定理的所有条件，则证明了该命题。</p>
+<p>比如说有这样的一个集合<span class="math inline">\(E=(0, 1)\cap \mathbb{Q}\)</span>。
+如果我们说某个有理数<span class="math inline">\(q\)</span>是<span class="math inline">\(E\)</span>中的最小数，
+不难发现有<span class="math inline">\(0&lt;q/2&lt;q&lt;1\)</span>，也就是说<span class="math inline">\(q/2\in E\)</span>且小于<span class="math inline">\(q\)</span>，
+即<span class="math inline">\(q\)</span>并不是这个集合的最小数。
+同理，假设有理数<span class="math inline">\(q\)</span>是<span class="math inline">\(E\)</span>中的最大数，
+不难发现有<span class="math inline">\(q&lt;(q+1)/2&lt;1\)</span>，也就是说<span class="math inline">\((q+1)/2\in E\)</span>且大于<span class="math inline">\(q\)</span>，
+即<span class="math inline">\(q\)</span>并不是这个集合的最大数。</p>
+<p>上面举出的这个示例不但无法说明有理数集<span class="math inline">\(\mathbb{Q}\)</span>有洞，
+更是指明了有理数集的稠密性，
+因为两个有理数<span class="math inline">\(p\)</span>和<span class="math inline">\(q\)</span>之间必然存在另一个有理数<span class="math inline">\((p+q)/2\)</span>，
+所以我们才能够在<span class="math inline">\(0\)</span>和<span class="math inline">\(q\)</span>之间找到一个有理数<span class="math inline">\(q/2\)</span>，
+使得<span class="math inline">\(0&lt;q/2&lt;q\)</span>，
+在<span class="math inline">\(q\)</span>和<span class="math inline">\(1\)</span>之间找到另一个有理数<span class="math inline">\((1+q)/2\)</span>，
+使得<span class="math inline">\(q&lt;(q+1)/2&lt;1\)</span>成立。</p>
+<p>作者在书中举出的示例是<span class="math inline">\(A=\{p\in\mathbb{Q}|p^2&lt;2, p&gt;0\}\)</span>，
+对于属于该集合的任意元素<span class="math inline">\(p\)</span>而言，
+总存在着另一个元素<span class="math inline">\(q=\frac{2p+2}{p+2}\)</span>满足<span class="math inline">\(p^2&lt;q^2&lt;2\)</span>，
+进而证明了该集合<span class="math inline">\(A\)</span>当中不存在最大值。</p>
+<p>验证：
+<span class="math display">\[
+  \begin{split}
+    q&amp;=\frac{2p+2}{p+2}\\
+     &amp;=\frac{2p+2+p^2-p^2}{p+2}\\
+     &amp;=\frac{p^2+2p+2-p^2}{p+2}\\
+     &amp;=p - \frac{p^2-2}{p+2}\\
+  \end{split}
+\]</span>
+由于<span class="math inline">\(p&gt;0\)</span>且<span class="math inline">\(p^2-2&lt;0\)</span>，则<span class="math inline">\((p^2-2)/(p+2)&lt;0\)</span>，可推知<span class="math inline">\(q&gt;p\)</span>。
+再看<span class="math inline">\(q^2-2\)</span>的计算结果：
+<span class="math display">\[
+  \begin{split}
+    q^2-2&amp;=\frac{(2p+2)^2}{(p+2)^2}-2\\
+         &amp;=\frac{4p^2+8p+4-2p^2-8p-8}{(p+2)^2}\\
+         &amp;=\frac{2(p^2-2)}{(p+2)^2}\\
+  \end{split}
+\]</span>
+同样根据<span class="math inline">\(p^2-2&lt;0\)</span>可以证明<span class="math inline">\(q^2-2&lt;0\)</span>。</p>
+<p>我们证明了所取的这个<span class="math inline">\(q\)</span>满足了我们对它的所有期待，
+也就是说，对于集合<span class="math inline">\(A\)</span>当中的任意一个元素<span class="math inline">\(p\)</span>，
+我们均可以在同一个集合当中找到一个更大的元素<span class="math inline">\(q\)</span>，
+即集合<span class="math inline">\(A\)</span>当中不存在最大数。</p>
+<p>对于命题的另外一部分，我们可以找下面这个集合：
+<span class="math display">\[
+  B=\{p\in\mathbb{Q}|p^2&gt;2,\ p&gt;0\}
+\]</span>
+验证该集合满足命题当中的条件是非常简单的，
+我们只要照抄一下前文的证明过程就可以了，
+对于集合<span class="math inline">\(B\)</span>当中的任意一个元素<span class="math inline">\(p\)</span>，
+我们可以令<span class="math inline">\(q=\frac{2p+2}{p+2}\)</span>，然后有：
+<span class="math display">\[
+  \begin{split}
+    q&amp;=\frac{2p+2}{p+2}\\
+     &amp;=\frac{2p+2+p^2-p^2}{p+2}\\
+     &amp;=\frac{p^2+2p+2-p^2}{p+2}\\
+     &amp;=p - \frac{p^2-2}{p+2}\\
+  \end{split}
+\]</span>
+根据<span class="math inline">\(p^2-2&gt;0\)</span>可知<span class="math inline">\(q&lt;p\)</span>。</p>
+<p><span class="math display">\[
+  \begin{split}
+    q^2-2&amp;=\frac{(2p+2)^2}{(p+2)^2}-2\\
+         &amp;=\frac{4p^2+8p+4-2p^2-8p-8}{(p+2)^2}\\
+         &amp;=\frac{2(p^2-2)}{(p+2)^2}\\
+  \end{split}
+\]</span>
+同样根据<span class="math inline">\(p^2-2&gt;0\)</span>可知<span class="math inline">\(q^2-2&gt;0\)</span>。由此，我们便完成了所有的证明过程。</p>
+</div>
+<div id="评述" class="section level2">
+<h2>评述</h2>
+<p>集合<span class="math inline">\(A\)</span>和集合<span class="math inline">\(B\)</span>没有共同元素，即便我们将集合<span class="math inline">\(A\)</span>和集合<span class="math inline">\(B\)</span>改写为如下形式，也是如此：
+<span class="math display">\[
+  \begin{split}
+    A&amp;=\{p\in\mathbb{Q}|p^2\le2,\ p&gt;0\} \\
+    B&amp;=\{p\in\mathbb{Q}|p^2\ge2,\ p&gt;0\}
+  \end{split}
+\]</span>
+不管是从上面的推导过程来看，还是从<a href="https://f-df.com/post/square_root_of_two/">我之前做的读书笔记来看</a>，不存在某个有理数的平方等于<span class="math inline">\(2\)</span>。
+如果<span class="math inline">\(\sqrt{2}\)</span>确实存在，那就说明有理数集合<span class="math inline">\(\mathbb{Q}\)</span>有洞。
+不禁想起初中数学课本上的那一句“数又不够用了”。</p>
+</div>
