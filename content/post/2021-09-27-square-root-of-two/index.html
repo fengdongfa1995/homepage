@@ -1,0 +1,42 @@
+---
+title: 根号2不为有理数
+author: 冯冬发
+date: '2021-09-27'
+slug: square_root_of_two
+categories:
+  - 数学分析
+tags:
+  - 阅读笔记
+output:
+  pdf_document:
+    latex_engine: xelatex
+header-includes:
+  - \usepackage{ctex}
+---
+
+<script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
+
+
+<div id="证明过程" class="section level2">
+<h2>证明过程</h2>
+<p>使用反证法证明该命题。</p>
+<p>假设<span class="math inline">\(\sqrt{2}\)</span>为有理数，
+即存在某个有理数<span class="math inline">\(q\)</span>，其平方<span class="math inline">\(q^2=2\)</span>。</p>
+<p>我们都知道所有有理数均可以表示为<span class="math inline">\(q=m/n,\quad m,n \in \mathbb{Z}\)</span>的形式，
+这里我们要求<span class="math inline">\(m\)</span>和<span class="math inline">\(n\)</span>不同时为偶数，
+这点要求是不过分的，
+因为如果<span class="math inline">\(m\)</span>和<span class="math inline">\(n\)</span>同时为偶数，
+那便可以令分子和分母同时除以<span class="math inline">\(2\)</span>。
+这一处理过程可以重复不断地进行下去，
+直到<span class="math inline">\(m\)</span>和<span class="math inline">\(n\)</span>不同时为偶数。</p>
+<p>由<span class="math inline">\(q^2=2\)</span>可以推知存在两个不同时为偶数的数<span class="math inline">\(m\)</span>和<span class="math inline">\(n\)</span>，
+有<span class="math inline">\(m^2=2n^2\)</span>，即<span class="math inline">\(m^2\)</span>是一个偶数。
+根据偶数的定义，我们可以将<span class="math inline">\(m\)</span>改写为<span class="math inline">\(m=2b\)</span>，
+于是可以推知<span class="math inline">\(m^2=(2b)^2=4b^2\)</span>，
+结合前文内容可以推知<span class="math inline">\(n^2=2b^2\)</span>，
+由此可见<span class="math inline">\(n\)</span>同样也是一个偶数。</p>
+<p>也就是说，如果<span class="math inline">\(\sqrt{2}\)</span>是有理数的话，
+那么该有理数的分子和分母同时为偶数，
+这与我们前文提及的要求相矛盾，
+故而我们认为<span class="math inline">\(\sqrt{2}\)</span>不是有理数。</p>
+</div>
