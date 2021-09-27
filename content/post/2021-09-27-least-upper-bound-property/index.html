@@ -1,0 +1,75 @@
+---
+title: 最小上界性和最大下界性的等价
+author: 冯冬发
+date: '2021-09-27'
+slug: least_upper_bound_property
+categories:
+  - 数学分析
+tags:
+  - 阅读笔记
+output:
+  pdf_document:
+    latex_engine: xelatex
+header-includes:
+  - \usepackage{ctex}
+---
+
+<script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
+
+
+<div id="定理" class="section level2">
+<h2>定理</h2>
+<p>摘自《普林斯顿数学分析读本》的定理<span class="math inline">\(4.12\)</span>和定理<span class="math inline">\(4.13\)</span>。</p>
+<blockquote>
+<p><strong>定理 4.12</strong>
+设<span class="math inline">\(S\)</span>是具有最小上界性的有序集，
+那么<span class="math inline">\(S\)</span>也具有最大下界性。
+也就是说，<span class="math inline">\(S\)</span>的每一个有下界的非空子集<span class="math inline">\(B\)</span>都在<span class="math inline">\(S\)</span>中存在<span class="math inline">\(\inf B\)</span>。
+此外，如果设<span class="math inline">\(L\)</span>为<span class="math inline">\(B\)</span>的全体下界的集合，那么<span class="math inline">\(\inf B=\sup L\)</span>。</p>
+</blockquote>
+<blockquote>
+<p><strong>定理 4.13</strong>
+设<span class="math inline">\(S\)</span>是具有最大下界性的有序集，
+那么<span class="math inline">\(S\)</span>也具有最小上界性。
+也就是说，<span class="math inline">\(S\)</span>的每一个有上界的非空子集<span class="math inline">\(B\)</span>都在<span class="math inline">\(S\)</span>中存在<span class="math inline">\(\sup B\)</span>。
+此外，如果设<span class="math inline">\(U\)</span>为<span class="math inline">\(B\)</span>的全体上界的集合，那么<span class="math inline">\(\sup B=\inf U\)</span>。</p>
+</blockquote>
+</div>
+<div id="证明定理4.12" class="section level2">
+<h2>证明定理<span class="math inline">\(4.12\)</span></h2>
+<p>依命题当中假设，
+在拥有最小上界性的有序集<span class="math inline">\(S\)</span>当中有一个存在下界的非空子集<span class="math inline">\(B\)</span>。</p>
+<p>先令集合<span class="math inline">\(L\)</span>为集合<span class="math inline">\(B\)</span>全体下界构成的集合，
+由于集合<span class="math inline">\(B\)</span>存在下界，则<span class="math inline">\(L\)</span>为非空集合。
+集合<span class="math inline">\(L\)</span>当中的任意元素都是集合<span class="math inline">\(B\)</span>的下界，
+也就是说集合<span class="math inline">\(L\)</span>当中的任意元素都不大于集合<span class="math inline">\(B\)</span>当中的所有元素，
+也就是说集合<span class="math inline">\(B\)</span>当中的任意元素都不小于集合<span class="math inline">\(L\)</span>当中的所有元素，
+所以集合<span class="math inline">\(B\)</span>当中的任意元素都是集合<span class="math inline">\(L\)</span>的上界。</p>
+<p>由于集合<span class="math inline">\(B\)</span>非空，则集合<span class="math inline">\(L\)</span>至少存在一个上界。
+由于集合<span class="math inline">\(S\)</span>具有最小上界性，则可推知<span class="math inline">\(\sup L\)</span>存在。
+不妨令<span class="math inline">\(\alpha=\sup L\)</span>，
+如果我们能够证明<span class="math inline">\(\alpha=\inf B\)</span>，那么命题得证。</p>
+<p>为证明<span class="math inline">\(\alpha\)</span>为集合<span class="math inline">\(B\)</span>的最大下界，我们首先要证明其为集合<span class="math inline">\(B\)</span>的下界，
+即<span class="math inline">\(\alpha\)</span>不大于集合<span class="math inline">\(B\)</span>当中的所有元素。
+使用反证法证明，假设集合<span class="math inline">\(B\)</span>当中存在某个元素<span class="math inline">\(\gamma&lt;\alpha\)</span>，
+即<span class="math inline">\(\gamma&lt;\sup L\)</span>，
+由上确界的定义可知<span class="math inline">\(\gamma\)</span>不是集合<span class="math inline">\(L\)</span>的上界，
+即在集合<span class="math inline">\(L\)</span>当中存在某个元素大于<span class="math inline">\(\gamma\)</span>，
+也就是说集合<span class="math inline">\(L\)</span>当中存在某个元素大于集合<span class="math inline">\(B\)</span>当中的某个元素，
+这就和集合<span class="math inline">\(L\)</span>是集合<span class="math inline">\(B\)</span>全体下界的集合相矛盾，
+故而<span class="math inline">\(\alpha\)</span>是集合<span class="math inline">\(B\)</span>的下界。</p>
+<p>现在来证明<span class="math inline">\(\alpha\)</span>是最大下界，对于任意的<span class="math inline">\(\beta&gt;\alpha\)</span>，
+则有<span class="math inline">\(\beta&gt;\sup L\)</span>，
+由上确界的定义可知<span class="math inline">\(\beta\notin L\)</span>，即<span class="math inline">\(\beta\)</span>不是<span class="math inline">\(B\)</span>的下界，由此命题得证。</p>
+</div>
+<div id="证明定理4.13" class="section level2">
+<h2>证明定理<span class="math inline">\(4.13\)</span></h2>
+<p>依葫芦画瓢，可以从最大下界性推出最小上界性。</p>
+<p>由<span class="math inline">\(B\)</span>存在上界可知<span class="math inline">\(U\)</span>非空，由<span class="math inline">\(B\)</span>非空可推知<span class="math inline">\(U\)</span>存在下界，
+两相结合由最大下界性推知<span class="math inline">\(\alpha=\inf U\)</span>存在。</p>
+<p>如果<span class="math inline">\(\alpha\)</span>不是<span class="math inline">\(B\)</span>的上界，则<span class="math inline">\(B\)</span>中存在某个元素大于<span class="math inline">\(\alpha\)</span>，
+也就是说<span class="math inline">\(B\)</span>中某个元素大于<span class="math inline">\(U\)</span>的某个元素，这与集合<span class="math inline">\(U\)</span>的定义相矛盾，
+故而<span class="math inline">\(\alpha\)</span>是<span class="math inline">\(B\)</span>的上界。</p>
+<p>对于任意<span class="math inline">\(\beta&lt;\alpha\)</span>，均有<span class="math inline">\(\beta&lt;\inf U\)</span>，会有<span class="math inline">\(\beta\notin U\)</span>，
+也就是说<span class="math inline">\(\beta\)</span>不是<span class="math inline">\(B\)</span>的上界，由此便证明了<span class="math inline">\(\alpha=\sup B\)</span>。</p>
+</div>
