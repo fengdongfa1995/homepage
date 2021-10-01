@@ -1,0 +1,184 @@
+---
+title: 实数域的基本性质
+author: 冯冬发
+date: '2021-09-28'
+slug: real_field_basic_property
+categories:
+  - 数学分析
+tags:
+  - 阅读笔记
+output:
+  pdf_document:
+    latex_engine: xelatex
+header-includes:
+  - \usepackage{ctex}
+---
+
+<script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
+
+
+<div id="实数域的定义" class="section level2">
+<h2>实数域的定义</h2>
+<p>《普林斯顿数学分析读本》直接定义出一个实数域：</p>
+<blockquote>
+<p><strong>定义 5.4</strong>
+实数集<span class="math inline">\(\mathbb{R}\)</span>是具有最小上界性且包含<span class="math inline">\(\mathbb{Q}\)</span>的有序域。</p>
+</blockquote>
+<p>为使本文具有一定的自包含性（self-contained），
+我们首先将该定义当中提及的概念都摘抄出来：</p>
+<ul>
+<li><span class="math inline">\(\mathbb{Q}\)</span>是全体有理数的集合。</li>
+<li>设<span class="math inline">\(S\)</span>是有序集，如果<span class="math inline">\(S\)</span>的每一个有上界的非空子集<span class="math inline">\(E\)</span>都在<span class="math inline">\(S\)</span>中存在<span class="math inline">\(\sup E\)</span>，
+那么称有序集<span class="math inline">\(S\)</span>具有最小上界性。</li>
+<li>如果集合<span class="math inline">\(F\)</span>对加法运算和乘法运算闭合，则称其为域。</li>
+<li>有序域是域，然后还是满足两条公理的有序集：
+<ul>
+<li>如果<span class="math inline">\(y&lt;z\)</span>，那么<span class="math inline">\(\forall x, y,z\in F\)</span>，<span class="math inline">\(x+y&lt;x+z\)</span></li>
+<li>如果<span class="math inline">\(x&gt;0\)</span>且<span class="math inline">\(y&gt;0\)</span>，那么<span class="math inline">\(\forall x,y\in F\)</span>，<span class="math inline">\(xy&gt;0\)</span></li>
+</ul></li>
+</ul>
+<p>我们的生活经验告诉我们实数域是存在的，
+在这里我们直接假设实数域是存在的。
+以后学有余力的话，可能会再将实数域存在性的证明过程摘抄下来。</p>
+</div>
+<div id="实数域mathbbr的阿基米德性质" class="section level2">
+<h2>实数域<span class="math inline">\(\mathbb{R}\)</span>的阿基米德性质</h2>
+<div id="定理" class="section level3">
+<h3>定理</h3>
+<blockquote>
+<p>对于任意一个给定的正实数，我们都可以找到一个自然数，使得这两个数的乘积任意大。</p>
+</blockquote>
+<blockquote>
+<p>用符号表示，即<span class="math inline">\(\forall x,y\in\mathbb{R}\)</span>且<span class="math inline">\(x&gt;0\)</span>，
+<span class="math inline">\(\exists n\in\mathbb{N}\)</span>使得<span class="math inline">\(nx&gt;y\)</span></p>
+</blockquote>
+</div>
+<div id="证明" class="section level3">
+<h3>证明</h3>
+<p>使用反证法可以证明该命题。</p>
+<p>假设不存在<span class="math inline">\(n\in\mathbb{N}\)</span>可以使得<span class="math inline">\(nx&gt;y\)</span>，
+也就是说<span class="math inline">\(y\)</span>是集合<span class="math inline">\(A=\{nx|n\in\mathbb{N}\}\)</span>的上界。
+由于实数域具有最小上界性，同时集合<span class="math inline">\(A\)</span>非空且有上界，
+由此可知集合<span class="math inline">\(A\)</span>存在最小上界<span class="math inline">\(\alpha=\sup A\)</span>。</p>
+<p>那么对于数<span class="math inline">\(\alpha-x\)</span>而言，该数小于<span class="math inline">\(\alpha\)</span>，
+由上确界的定义可知，该数不是集合<span class="math inline">\(A\)</span>的上界，
+则存在某个自然数<span class="math inline">\(m\)</span>，使得<span class="math inline">\(\alpha-x&lt;mx\)</span>，即<span class="math inline">\(\alpha&lt;(m+1)x\)</span>成立。</p>
+<p>由于<span class="math inline">\((m+1)x\in A\)</span>，则<span class="math inline">\(\alpha\)</span>不为集合<span class="math inline">\(A\)</span>的上界，
+这与<span class="math inline">\(\alpha\)</span>是<span class="math inline">\(A\)</span>的上确界相矛盾，故而，我们认为命题成立。</p>
+</div>
+</div>
+<div id="有理数域mathbbq在实数域mathbbr中稠密" class="section level2">
+<h2>有理数域<span class="math inline">\(\mathbb{Q}\)</span>在实数域<span class="math inline">\(\mathbb{R}\)</span>中稠密</h2>
+<div id="定理-1" class="section level3">
+<h3>定理</h3>
+<blockquote>
+<p>任意两个实数之间都至少存在一个有理数。</p>
+</blockquote>
+<blockquote>
+<p>用符号表示，即：<span class="math inline">\(x,y\in\mathbb{R}\)</span>且<span class="math inline">\(x&lt;y\Rightarrow\exists p\in\mathbb{Q}\)</span>使得<span class="math inline">\(x&lt;p&lt;y\)</span></p>
+</blockquote>
+</div>
+<div id="证明-1" class="section level3">
+<h3>证明</h3>
+<p>命题就是想在实数<span class="math inline">\(x\)</span>和<span class="math inline">\(y\)</span>之间找到一个有理数<span class="math inline">\(m/n\)</span>，
+我们首先要找到一个合适的<span class="math inline">\(n\)</span>，
+使得序列<span class="math inline">\({1/n, 2/n,\ldots}\)</span>至少有一个元素落在<span class="math inline">\(x\)</span>和<span class="math inline">\(y\)</span>中间。
+这就需要我们找到一个足够大的<span class="math inline">\(n\)</span>，使得<span class="math inline">\(1/n&lt;y-x\)</span>成立，
+即要求<span class="math inline">\(n(y-x)&gt;1\)</span>，这显然可以由实数域的阿基米德性质满足。</p>
+<p>第二步便是要取到一个合适的<span class="math inline">\(m\)</span>，使得<span class="math inline">\(nx&lt;m&lt;ny\)</span>成立。
+前文选择出来的<span class="math inline">\(n\)</span>满足<span class="math inline">\(ny&gt;1+nx\)</span>，
+如果我们可以找到一个满足<span class="math inline">\(nx&lt;m\le1+nx\)</span>的<span class="math inline">\(m\)</span>，
+那么就会有<span class="math inline">\(nx&lt;m\le1+nx&lt;ny\)</span>，
+我们就证明了原命题成立。
+可以将条件<span class="math inline">\(nx&lt;m\le1+nx\)</span>改写为<span class="math inline">\(m-1\le nx&lt;m\)</span>。</p>
+<p>第一种情形是<span class="math inline">\(nx&gt;0\)</span>，可以写出集合<span class="math inline">\(\{m_1\in\mathbb{N}|m_1&gt;nx\}\)</span>，
+由实数的阿基米德性质可知该集合非空，
+同时由良序定理可知该集合存在最小值<span class="math inline">\(m\)</span>，
+该最小值满足<span class="math inline">\(m&gt;nx\)</span>，同时<span class="math inline">\(m-1\)</span>不在集合内，有<span class="math inline">\(m-1\le nx\)</span>，
+所以我们就找到了一个符合条件的<span class="math inline">\(m\)</span>。</p>
+<p>第二种情形是<span class="math inline">\(nx=0\)</span>，直接取<span class="math inline">\(m=1\)</span>便能满足<span class="math inline">\(m-1\le nx&lt;m\)</span>。</p>
+<p>第三种情形是<span class="math inline">\(nx&lt;0\)</span>，那么会有<span class="math inline">\(-nx&gt;0\)</span>，参照第一种情形当中的讨论，
+我们能够找到这样的一个自然数<span class="math inline">\(m_2\)</span>，其满足<span class="math inline">\(m_2-1\le -nx&lt;m_2\)</span>。
+进而有<span class="math inline">\(-m_2&lt;nx\le 1-m_2\)</span>。
+如果<span class="math inline">\(nx=1-m_2\)</span>，可以取<span class="math inline">\(m=2-m_2\)</span>，有<span class="math inline">\(m-1\le nx&lt;m\)</span>成立。
+如果<span class="math inline">\(nx&lt;1-m_2\)</span>，可以去<span class="math inline">\(m=1-m_2\)</span>，同样有<span class="math inline">\(m-1\le nx&lt;m\)</span>成立。</p>
+<p>综上所述，我们便证明了原命题成立。</p>
+</div>
+</div>
+<div id="实数域mathbbr中根的存在性" class="section level2">
+<h2>实数域<span class="math inline">\(\mathbb{R}\)</span>中根的存在性</h2>
+<div id="定理-2" class="section level3">
+<h3>定理</h3>
+<blockquote>
+<p>对于任意<span class="math inline">\(n\in\mathbb{N}\)</span>，每个正实数都有唯一的正<span class="math inline">\(n\)</span>次方根。</p>
+</blockquote>
+<blockquote>
+<p>用符号表示，即：<span class="math inline">\(\forall x\in\mathbb{R}\)</span>且<span class="math inline">\(x&gt;0\)</span>，<span class="math inline">\(\forall n\in\mathbb{N}\)</span>，
+<span class="math inline">\(\exists\)</span>唯一的<span class="math inline">\(y\in\mathbb{R}\)</span>，使得<span class="math inline">\(y&gt;0\)</span>且<span class="math inline">\(y^n=x\)</span>。</p>
+</blockquote>
+</div>
+<div id="证明-2" class="section level3">
+<h3>证明</h3>
+<p>首先证明唯一性，这里使用反证法来加以证明。
+我们假设某个实数<span class="math inline">\(x\)</span>存在两个不相同的<span class="math inline">\(n\)</span>次方根<span class="math inline">\(y_1\)</span>和<span class="math inline">\(y_2\)</span>，
+即有<span class="math inline">\(y_1^n=x\)</span>和<span class="math inline">\(y_2^2=x\)</span>同时成立。
+不失一般性地，我们假设<span class="math inline">\(0&lt;y_1&lt;y_2\)</span>，由有序域公理可以推知<span class="math inline">\(0&lt;y_1^n&lt;y_2^n\)</span>，
+即有<span class="math inline">\(x&lt;x\)</span>成立，显然矛盾，故而唯一性得证。</p>
+<p>上面的证明过程直接假设正<span class="math inline">\(n\)</span>次方根存在，但事实上其存在性需要证明。
+我们构建出如下形式的集合：
+<span class="math display">\[
+  E = \{t\in\mathbb{R}|t&gt;0且t^n&lt;x\}
+\]</span>
+为了使用实数域的最小上界性，我们首先要证明集合<span class="math inline">\(E\)</span>非空，
+我们可以取<span class="math inline">\(t_0=x/(x+1)\)</span>，
+因为<span class="math inline">\(0&lt;t_0^n\le t_0&lt;x\)</span>，所以<span class="math inline">\(t_0\in E\)</span>。
+然后要证明集合<span class="math inline">\(E\)</span>存在上界，我们可以令<span class="math inline">\(t_1=x+1\)</span>，
+显然我们有<span class="math inline">\(t^n_1\ge t_1&gt;x\)</span>。
+两相结合，我们认为集合<span class="math inline">\(E\)</span>存在上确界，记为<span class="math inline">\(y=\sup E\)</span>。</p>
+<p>如果可以证明<span class="math inline">\(y\)</span>既不能大于<span class="math inline">\(\sqrt[n]{x}\)</span>，也不能小于<span class="math inline">\(\sqrt[n]{x}\)</span>，
+那就只能有<span class="math inline">\(y=\sqrt[n]{x}\)</span>，由于前文已经证明了<span class="math inline">\(y=\sup E\)</span>，
+则<span class="math inline">\(\sqrt[n]{x}\)</span>存在。
+当然，在证明<span class="math inline">\(\sqrt[n]{x}\)</span>存在之前，我们还不能直接使用这一符号，
+更为正式的说法是证明<span class="math inline">\(y^n&gt;x\)</span>和<span class="math inline">\(y^n&lt;x\)</span>均不成立。</p>
+<p>使用反证法证明<span class="math inline">\(y^n&lt;x\)</span>不成立。
+我们首先假设<span class="math inline">\(y^n&lt;x\)</span>，即<span class="math inline">\(y\in E\)</span>。
+如果存在<span class="math inline">\(h&gt;0\)</span>，且有<span class="math inline">\(y+h\in E\)</span>，则<span class="math inline">\(y\)</span>不为集合<span class="math inline">\(E\)</span>的上界，与<span class="math inline">\(y\)</span>为上确界相矛盾。</p>
+<p>注意到对于任意的<span class="math inline">\(0&lt;a&lt;b\)</span>，都有
+<span class="math display">\[
+  b^n-a^n=(b-a)\sum_{k=1}^nb^{n-k}a^{k-1}&lt;(b-a)nb^{n-1}
+\]</span></p>
+<p>令<span class="math inline">\(b=y+h\)</span>，<span class="math inline">\(a=y\)</span>，则上式可化为：
+<span class="math display">\[
+  \begin{split}
+  (y+h)^n-y^n&amp;&lt;hn(y+h)^{n-1}\\
+  (y+h)^n&amp;&lt;y^n+hn(y+h)^{n-1}
+  \end{split}
+\]</span>
+如果有<span class="math inline">\(y^n+hn(y+h)^{n-1}&lt;x\)</span>，则有<span class="math inline">\(y^n&lt;x\)</span>成立，命题得证。
+这里我们取一个小于<span class="math inline">\(1\)</span>的<span class="math inline">\(h\)</span>，则可对上述不等式进行如下放缩：
+<span class="math display">\[
+  y^n+hn(y+h)^{n-1}&lt;y^n+hn(y+1)^{n-1}
+\]</span>
+取<span class="math inline">\(h&lt;(x-y^n)/(n(y+1)^{n-1})\)</span>，便有<span class="math inline">\(y^n+hn(y+1)^{n-1}&lt;x\)</span>。
+显然<span class="math inline">\(h&gt;0\)</span>，所以我们只要取
+<span class="math display">\[
+  h &lt;\min\left\{1， \frac{x-y^n}{n(y+1)^{n-1}}\right\}
+\]</span>
+由此完成了这一半的证明。</p>
+<p>现在再使用反证法证明<span class="math inline">\(y^n&gt;x\)</span>不成立。
+我们首先假设<span class="math inline">\(y^n&gt;x\)</span>成立，那么显然<span class="math inline">\(y\)</span>就是集合<span class="math inline">\(E\)</span>的一个上界，
+如果我们能够找到一个<span class="math inline">\(k&gt;0\)</span>，使得<span class="math inline">\(y-k\)</span>同样也是集合<span class="math inline">\(E\)</span>的一个上界，
+那便与<span class="math inline">\(y\)</span>是集合<span class="math inline">\(E\)</span>的上确界相矛盾。</p>
+<p>令前文不等式当中的<span class="math inline">\(a=y\)</span>，<span class="math inline">\(b=y-k\)</span>，可以有：
+<span class="math display">\[
+  \begin{split}
+    y^n-(y-k)^n&amp;&lt;kny^{n-1}\\
+    (y-k)^n&amp;&gt;y^n-kny^{n-1}
+  \end{split}
+\]</span>
+如果有<span class="math inline">\(y^n-kny^{n-1}=x\)</span>，即<span class="math inline">\(k=(y^n-x)/(ny^{n-1})\)</span>，
+由假设<span class="math inline">\(y^n&gt;x\)</span>保证了<span class="math inline">\(k&gt;0\)</span>，且有<span class="math inline">\(y-k&gt;0\)</span>，
+故而<span class="math inline">\((y-k)^n&gt;x\)</span>成立，由此便完成了另外半部分的证明。</p>
+<p>综上所述，原命题得证，即每个正实数都存在一个唯一的正<span class="math inline">\(n\)</span>次方根。</p>
+</div>
+</div>

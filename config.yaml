@@ -2,8 +2,8 @@ baseurl: "https://f-df.com/"
 languageCode: "zh-cn"
 title: "冯冬发"
 theme: "hugo-xmin"
-googleAnalytics: ""
-disqusShortname: ""
+googleAnalytics: "G-SZ6DTC5YCR"
+disqusShortname: "home-yuerdzhipi"
 ignoreFiles: ["\\.Rmd$", "\\.Rmarkdown$", "_cache$", "\\.knit\\.md$", "\\.utf8\\.md$"]
 footnotereturnlinkcontents: "↩"
 
