@@ -1,0 +1,76 @@
+---
+title: 柯西-施瓦茨不等式
+author: 冯冬发
+date: '2021-10-05'
+slug: Cauchy–Schwarz inequality
+categories:
+  - 数学分析
+tags:
+  - 阅读笔记
+output:
+  pdf_document:
+    latex_engine: xelatex
+header-includes:
+  - \usepackage{ctex}
+---
+## 柯西-施瓦茨不等式
+对于任意$a_1,a_2,\ldots,a_n\in\mathbb{C}$和$b_1,b_2,\ldots,b_n\in\mathbb{C}$，
+下列不等式成立：
+$$
+  \left|\sum_{j=1}^na_j\bar{b}_j\right|^2\le\left(\sum_{j=1}^n|a_j|^2\right)\left(\sum_{j=1}^n|b_j|^2\right)
+$$
+
+## 证明
+显然不等式左右两侧均不小于$0$，总共可能会有的组合情况如下所示：
+
+|           | 右侧为0      | 右侧大于0      |
+| -         |  -           |  -             |
+| 左侧为 0  | 不等式成立   |  不等式成立    |
+| 左侧大于0 | 不等式不成立 |  待定          |
+
+当右侧式子为0时，会有$a_1=a_2=\dots=a_n=0$和$b_1=b_2=\dots=b_n=0$，
+此时左侧不等式也只能等于0，显然不等式成立。
+则上表当中只剩右下角一种情形待证明，即左侧式和右侧式同时大于0。
+
+这里使用数学归纳法加以证明。
+首先证明基准情形，即当$n=1$时，有
+$$
+  \begin{split}
+    \left|\sum_{j=1}^1a_j\bar{b}_j\right|^2&=|a_1\bar{b}_1|^2\\
+    &=|a_1|^2|b_1|^2\\
+    &=\left(\sum_{j=1}^1|a_j|^2\right)\left(\sum_{j=1}^1|b_j|^2\right)
+  \end{split}
+$$
+现假设柯西-施瓦茨不等式在$n=k-1$的情形下成立，即有：
+$$
+  \left|\sum_{j=1}^{k-1}a_j\bar{b}_j\right|^2\le\left(\sum_{j=1}^{k-1}|a_j|^2\right)\left(\sum_{j=1}^{k-1}|b_j|^2\right)
+$$
+左右两端同时取平方根，可得：
+$$
+  \left|\sum_{j=1}^{k-1}a_j\bar{b}_j\right|\le\sqrt{\left(\sum_{j=1}^{k-1}|a_j|^2\right)\left(\sum_{j=1}^{k-1}|b_j|^2\right)}
+$$
+于是
+$$
+  \begin{split}
+    \left|\sum_{j=1}^{k}a_j\bar{b}_j\right|&\le\left|\sum_{j=1}^{k-1}a_j\bar{b}_j\right|+|a_k\bar{b}_k|\\
+    &\le\sqrt{\left(\sum_{j=1}^{k-1}|a_j|^2\right)\left(\sum_{j=1}^{k-1}|b_j|^2\right)}+|a_k\bar{b}_k|\\
+    &=\sqrt{\left(\sum_{j=1}^{k-1}|a_j|^2\right)}\sqrt{\left(\sum_{j=1}^{k-1}|b_j|^2\right)}+|a_k||b_k|\\
+  \end{split}
+$$
+令$a=\sqrt{\left(\sum_{j=1}^{k-1}|a_j|^2\right)}$，
+$b=\sqrt{\left(\sum_{j=1}^{k-1}|b_j|^2\right)}$，
+$c=|a_k|$，$d=|b_k|$。
+如果能够证明$ab+cd\le\sqrt{(a^2+c^2)(b^2+d^2)}$，则命题成立。
+
+有
+$$
+  \begin{split}
+    &ab+cd\le\sqrt{(a^2+c^2)(b^2+d^2)}\\
+    \Longleftrightarrow&(ab+cd)^2\le(a^2+c^2)(b^2+d^2)\\
+    \Longleftrightarrow&a^2b^2+2a^2b^2c^2d^2+c^2d^2\le a^2b^2+a^2d^2+b^2c^2+c^2d^2\\
+    \Longleftrightarrow&2a^2b^2c^2d^2\le a^2d^2+b^2c^2\\
+    \Longleftrightarrow&0\le a^2d^2-2a^2b^2c^2d^2+b^2c^2\\
+    \Longleftrightarrow&0\le(ad-bc)^2
+  \end{split}
+$$
+由于$(ad-bc)^2\ge0$显然成立，故而我们证明了数学归纳法的归纳步骤，所以原命题得证。
